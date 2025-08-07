@@ -1,0 +1,14 @@
+{
+    "C:/path/to/file1.txt": [
+        "C:/backups/file1_even_days",
+        "C:/backups/file1_odd_days"
+    ],
+    "D:/important/data.doc": [
+        "D:/backups/doc_even_days",
+        "D:/backups/doc_odd_days"
+    ],
+    "E:/projects/config.ini": [
+        "E:/backups/config_even",
+        "E:/backups/config_odd"
+    ]
+}
