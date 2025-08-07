@@ -6,7 +6,7 @@ import logging
 from datetime import datetime, timedelta
 
 # Константы
-DAYS_TO_KEEP = 30  # Хранить резервные копии 30 дней
+DAYS_TO_KEEP = 20  # Хранить резервные копии 30 дней
 CONFIG_FILE = "backup_config.json"  # Путь к файлу конфигурации
 LOG_FILE = "backup_log.log"  # Файл для логов
 
@@ -48,13 +48,25 @@ def cleanup_old_backups(backup_dirs):
                 continue
                 
             try:
-                file_date_str = filename.split('_')[-1].replace('.zip', '')
-                file_date = datetime.strptime(file_date_str, "%Y-%m-%d_%H-%M-%S")
+                # Разбираем имя файла на части
+                parts = filename.split('_')
+                if len(parts) < 3:
+                    raise ValueError("Недостаточно частей в имени файла")
+                
+                # Собираем строку с датой (последние 2 части перед .zip)
+                date_str = '_'.join(parts[-2:]).replace('.zip', '')
+                
+                # Пробуем разные форматы даты
+                try:
+                    file_date = datetime.strptime(date_str, "%Y-%m-%d_%H-%M-%S")
+                except ValueError:
+                    file_date = datetime.strptime(date_str, "%d-%m-%Y_%H-%M-%S")
                 
                 if file_date < cutoff_date:
                     os.remove(file_path)
                     logging.info(f"Удален устаревший файл: {file_path}")
-            except (ValueError, IndexError) as e:
+                    
+            except Exception as e:
                 logging.warning(f"Некорректное имя файла {filename}: {str(e)}")
                 continue
 
